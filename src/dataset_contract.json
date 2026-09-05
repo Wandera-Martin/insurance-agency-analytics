@@ -1,0 +1,451 @@
+{
+  "agency_units": {
+    "agency_unit_id": {
+      "type": "VARCHAR(20)",
+      "required": true,
+      "primary_key": true
+    },
+    "agency_name": {
+      "type": "VARCHAR(120)",
+      "required": true
+    },
+    "branch": {
+      "type": "VARCHAR(120)",
+      "required": true
+    },
+    "district": {
+      "type": "VARCHAR(80)",
+      "required": false
+    },
+    "region": {
+      "type": "VARCHAR(30)",
+      "required": false
+    },
+    "manager_id": {
+      "type": "VARCHAR(20)",
+      "required": false
+    },
+    "launch_date": {
+      "type": "DATE",
+      "required": true
+    },
+    "status": {
+      "type": "VARCHAR(20)",
+      "required": true,
+      "allowed": [
+        "Active",
+        "Inactive"
+      ]
+    }
+  },
+  "customers": {
+    "customer_id": {
+      "type": "VARCHAR(20)",
+      "required": true,
+      "primary_key": true
+    },
+    "gender": {
+      "type": "VARCHAR(10)",
+      "required": false,
+      "allowed": [
+        "Male",
+        "Female"
+      ]
+    },
+    "date_of_birth": {
+      "type": "DATE",
+      "required": true
+    },
+    "marital_status": {
+      "type": "VARCHAR(20)",
+      "required": false
+    },
+    "occupation": {
+      "type": "VARCHAR(80)",
+      "required": false
+    },
+    "district": {
+      "type": "VARCHAR(80)",
+      "required": false
+    },
+    "region": {
+      "type": "VARCHAR(30)",
+      "required": false
+    },
+    "income_band": {
+      "type": "VARCHAR(30)",
+      "required": false
+    },
+    "acquisition_channel": {
+      "type": "VARCHAR(30)",
+      "required": false
+    },
+    "created_date": {
+      "type": "DATE",
+      "required": true
+    }
+  },
+  "agents": {
+    "agent_id": {
+      "type": "VARCHAR(20)",
+      "required": true,
+      "primary_key": true
+    },
+    "agency_unit_id": {
+      "type": "VARCHAR(20)",
+      "required": true,
+      "references": [
+        "agency_units",
+        "agency_unit_id"
+      ]
+    },
+    "gender": {
+      "type": "VARCHAR(10)",
+      "required": false,
+      "allowed": [
+        "Male",
+        "Female"
+      ]
+    },
+    "join_date": {
+      "type": "DATE",
+      "required": true
+    },
+    "status": {
+      "type": "VARCHAR(20)",
+      "required": true,
+      "allowed": [
+        "Active",
+        "Inactive",
+        "Exited"
+      ]
+    },
+    "experience_years": {
+      "type": "NUMERIC(5,2)",
+      "required": false
+    },
+    "agent_grade": {
+      "type": "VARCHAR(20)",
+      "required": false,
+      "allowed": [
+        "Trainee",
+        "Junior",
+        "Standard",
+        "Senior",
+        "Elite"
+      ]
+    },
+    "supervisor_id": {
+      "type": "VARCHAR(20)",
+      "required": false
+    },
+    "exit_date": {
+      "type": "DATE",
+      "required": false
+    }
+  },
+  "leads": {
+    "lead_id": {
+      "type": "VARCHAR(20)",
+      "required": true,
+      "primary_key": true
+    },
+    "agent_id": {
+      "type": "VARCHAR(20)",
+      "required": true,
+      "references": [
+        "agents",
+        "agent_id"
+      ]
+    },
+    "customer_id": {
+      "type": "VARCHAR(20)",
+      "required": false,
+      "references": [
+        "customers",
+        "customer_id"
+      ]
+    },
+    "lead_date": {
+      "type": "DATE",
+      "required": true
+    },
+    "source": {
+      "type": "VARCHAR(30)",
+      "required": false
+    },
+    "contact_status": {
+      "type": "VARCHAR(20)",
+      "required": false,
+      "allowed": [
+        "Uncontacted",
+        "Contacted"
+      ]
+    },
+    "appointment_status": {
+      "type": "VARCHAR(20)",
+      "required": false,
+      "allowed": [
+        "None",
+        "Booked",
+        "Completed",
+        "No Show"
+      ]
+    },
+    "application_status": {
+      "type": "VARCHAR(20)",
+      "required": false,
+      "allowed": [
+        "None",
+        "Submitted",
+        "Approved",
+        "Declined",
+        "Withdrawn"
+      ]
+    },
+    "converted": {
+      "type": "BOOLEAN",
+      "required": true
+    },
+    "conversion_date": {
+      "type": "DATE",
+      "required": false
+    }
+  },
+  "policies": {
+    "policy_id": {
+      "type": "VARCHAR(20)",
+      "required": true,
+      "primary_key": true
+    },
+    "customer_id": {
+      "type": "VARCHAR(20)",
+      "required": true,
+      "references": [
+        "customers",
+        "customer_id"
+      ]
+    },
+    "agent_id": {
+      "type": "VARCHAR(20)",
+      "required": true,
+      "references": [
+        "agents",
+        "agent_id"
+      ]
+    },
+    "product_name": {
+      "type": "VARCHAR(60)",
+      "required": true
+    },
+    "distribution_channel": {
+      "type": "VARCHAR(20)",
+      "required": true
+    },
+    "issue_date": {
+      "type": "DATE",
+      "required": true
+    },
+    "policy_term_years": {
+      "type": "INTEGER",
+      "required": true
+    },
+    "payment_frequency": {
+      "type": "VARCHAR(20)",
+      "required": true,
+      "allowed": [
+        "Monthly",
+        "Quarterly",
+        "Semi-Annual",
+        "Annual"
+      ]
+    },
+    "premium_amount": {
+      "type": "NUMERIC(14,2)",
+      "required": true
+    },
+    "annualized_premium": {
+      "type": "NUMERIC(14,2)",
+      "required": true
+    },
+    "sum_assured": {
+      "type": "NUMERIC(16,2)",
+      "required": true
+    },
+    "maturity_date": {
+      "type": "DATE",
+      "required": true
+    },
+    "policy_status": {
+      "type": "VARCHAR(20)",
+      "required": true,
+      "allowed": [
+        "Active",
+        "Grace",
+        "Lapsed",
+        "Surrendered",
+        "Matured",
+        "Cancelled"
+      ]
+    },
+    "lapse_date": {
+      "type": "DATE",
+      "required": false
+    },
+    "surrender_date": {
+      "type": "DATE",
+      "required": false
+    }
+  },
+  "premium_payments": {
+    "payment_id": {
+      "type": "VARCHAR(24)",
+      "required": true,
+      "primary_key": true
+    },
+    "policy_id": {
+      "type": "VARCHAR(20)",
+      "required": true,
+      "references": [
+        "policies",
+        "policy_id"
+      ]
+    },
+    "due_date": {
+      "type": "DATE",
+      "required": true
+    },
+    "payment_date": {
+      "type": "DATE",
+      "required": false
+    },
+    "amount_due": {
+      "type": "NUMERIC(14,2)",
+      "required": true
+    },
+    "amount_paid": {
+      "type": "NUMERIC(14,2)",
+      "required": true
+    },
+    "payment_status": {
+      "type": "VARCHAR(20)",
+      "required": true,
+      "allowed": [
+        "Paid",
+        "Late",
+        "Missed",
+        "Partial"
+      ]
+    },
+    "payment_method": {
+      "type": "VARCHAR(30)",
+      "required": false
+    }
+  },
+  "policy_status_history": {
+    "status_history_id": {
+      "type": "VARCHAR(24)",
+      "required": true,
+      "primary_key": true
+    },
+    "policy_id": {
+      "type": "VARCHAR(20)",
+      "required": true,
+      "references": [
+        "policies",
+        "policy_id"
+      ]
+    },
+    "status": {
+      "type": "VARCHAR(20)",
+      "required": true,
+      "allowed": [
+        "Active",
+        "Grace",
+        "Lapsed",
+        "Reinstated",
+        "Surrendered",
+        "Matured",
+        "Cancelled"
+      ]
+    },
+    "status_date": {
+      "type": "DATE",
+      "required": true
+    },
+    "reason": {
+      "type": "VARCHAR(120)",
+      "required": false
+    }
+  },
+  "sales_targets": {
+    "target_id": {
+      "type": "VARCHAR(24)",
+      "required": true,
+      "primary_key": true
+    },
+    "agent_id": {
+      "type": "VARCHAR(20)",
+      "required": true,
+      "references": [
+        "agents",
+        "agent_id"
+      ]
+    },
+    "target_month": {
+      "type": "DATE",
+      "required": true
+    },
+    "policy_target": {
+      "type": "INTEGER",
+      "required": true
+    },
+    "premium_target": {
+      "type": "NUMERIC(14,2)",
+      "required": true
+    },
+    "new_customer_target": {
+      "type": "INTEGER",
+      "required": true
+    }
+  },
+  "incentives": {
+    "incentive_id": {
+      "type": "VARCHAR(24)",
+      "required": true,
+      "primary_key": true
+    },
+    "agent_id": {
+      "type": "VARCHAR(20)",
+      "required": true,
+      "references": [
+        "agents",
+        "agent_id"
+      ]
+    },
+    "campaign_name": {
+      "type": "VARCHAR(100)",
+      "required": true
+    },
+    "start_date": {
+      "type": "DATE",
+      "required": true
+    },
+    "end_date": {
+      "type": "DATE",
+      "required": true
+    },
+    "threshold": {
+      "type": "NUMERIC(14,2)",
+      "required": false
+    },
+    "incentive_amount": {
+      "type": "NUMERIC(14,2)",
+      "required": true
+    },
+    "qualified": {
+      "type": "BOOLEAN",
+      "required": true
+    }
+  }
+}
