@@ -34,13 +34,13 @@ WHERE premium_amount <= 0
 SELECT *
 FROM policies
 WHERE ABS(
-    annualized_premium -
-    premium_amount * CASE payment_frequency
-        WHEN 'Monthly' THEN 12
-        WHEN 'Quarterly' THEN 4
-        WHEN 'Semi-Annual' THEN 2
-        WHEN 'Annual' THEN 1
-    END
+   annualized_premium -
+      premium_amount * CASE payment_frequency
+         WHEN 'Monthly' THEN 12
+         WHEN 'Quarterly' THEN 4
+         WHEN 'Semi-Annual' THEN 2
+         WHEN 'Annual' THEN 1
+      END
 ) > 1;
 
 -- 6. Payment anomalies

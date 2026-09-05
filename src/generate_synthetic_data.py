@@ -49,10 +49,10 @@ agency_df=pd.DataFrame(agency_units)
 agency_df.drop(columns=["unit_factor"]).to_csv(OUT/"agency_units.csv",index=False)
 
 profiles = {
-    "Star":              dict(weight=.18, conv=.30, lapse=.055, prod=1.45),
-    "High-volume risk":  dict(weight=.12, conv=.33, lapse=.22,  prod=1.55),
-    "Steady":            dict(weight=.42, conv=.22, lapse=.10,  prod=1.00),
-    "Developing":        dict(weight=.20, conv=.13, lapse=.15,  prod=.68),
+    "Star":              {"weight": .18, "conv": .30, "lapse": .055, "prod": 1.45},
+    "High-volume risk":  {"weight": .12, "conv": .33, "lapse": .22,  "prod": 1.55},
+    "Steady":            {"weight": .42, "conv": .22, "lapse": .10,  "prod": 1.00},
+    "Developing":        {"weight": .20, "conv": .13, "lapse": .15,  "prod": .68},
     "Inactive-risk":     dict(weight=.08, conv=.07, lapse=.18,  prod=.40),  # noqa: C408
 }
 pnames=list(profiles)
@@ -254,7 +254,7 @@ for a in agents:
         if a["join_date"] > m: continue
         if a["exit_date"] and a["exit_date"] < m: continue
         prod=profiles[a["profile"]]["prod"]
-        policy_target=max(3,int(round(random.normalvariate(12*prod,2))))
+        policy_target=max(3,round(random.normalvariate(12*prod,2)))
         premium_target=max(2_000_000, round(random.normalvariate(18_000_000*prod,3_000_000)/100_000)*100_000)
         targets.append({
             "target_id":f"T{tid:08d}","agent_id":a["agent_id"],"target_month":m,
@@ -284,4 +284,4 @@ pd.DataFrame(incentives).to_csv(OUT/"incentives.csv",index=False)
 
 print("Generated:")
 for f in sorted(OUT.glob("*.csv")):
-    print(f.name, sum(1 for _ in open(f,encoding="utf-8"))-1)
+    print(f.name, sum(1 for _ in open(f,encoding="utf-8"))-1)  # noqa: SIM115
