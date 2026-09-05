@@ -419,31 +419,34 @@ A simple predictive model will be developed to support retention prioritization.
 
 ```text
 insurance-agency-analytics/
-│
-├── data/
-│   ├── raw/
-│   └── processed/
-│
-├── docs/
-│   ├── data_dictionary.md
-│   └── synthetic_data_rules.md
-│
-├── sql/
-│   ├── 01_schema.sql
-│   └── 02_quality_checks.sql
-│
-├── src/
-│   └── generate_synthetic_data.py
-│
-├── notebooks/
-│   └── 01_agency_overview.ipynb
-│
-├── powerbi/
-│   └── README.md
-│
-├── requirements.txt
-├── .gitignore
-└── README.md
+  .github/workflows/phase2.yml
+  compose.yaml
+  data/                         # Generated synthetic CSVs; ignored by Git
+  docs/
+    data_dictionary.md
+    synthetic_data_rules.md
+    phase2_workflow.md
+    phase2_baseline.md
+    phase2_verification.md
+    data_quality_report.md
+    data_understanding_output.txt
+  sql/
+    01_schema.sql
+    02_quality_checks.sql
+    03_data_understanding.sql
+  src/
+    generate_synthetic_data.py
+    dataset.py
+    dataset_contract.json
+    data_quality.py
+    load_postgres.py
+  tests/
+  notebooks/01_agency_overview.ipynb
+  powerbi/README.md
+  requirements-phase2.txt
+  requirements.txt
+  pyproject.toml
+  README.md
 ```
 
 ---
@@ -470,7 +473,7 @@ python -m venv .venv
 
 ```bash
 python -m pip install --upgrade pip
-pip install -r requirements.txt
+pip install -r requirements-phase2.txt
 ```
 
 ### 4. Generate the synthetic dataset
@@ -485,54 +488,34 @@ This creates the source CSV datasets inside:
 data/raw/
 ```
 
-### 5. Create the PostgreSQL database
+### 5. Load and validate PostgreSQL (Phase 2)
 
-```sql
-CREATE DATABASE insurance_agency_analytics;
+Follow [the reproducible Phase 2 workflow](docs/phase2_workflow.md) to start
+PostgreSQL and configure `DATABASE_URL`.
+
+```bash
+python src/data_quality.py --report data/processed/source_quality_report.md
+python src/load_postgres.py
+python src/data_quality.py --database
 ```
 
-Then run:
+The loader initializes the schema, loads all nine CSVs in dependency order,
+validates PostgreSQL values against the source, and commits only when all checks
+pass. A normal rerun refuses existing data; use `--replace` explicitly to replace
+the synthetic snapshot atomically.
 
-```text
-sql/01_schema.sql
-```
-
-### 6. Load the generated CSV files
-
-Load the nine generated datasets into their corresponding PostgreSQL tables.
-
-### 7. Run data-quality checks
-
-Execute:
-
-```text
-sql/02_quality_checks.sql
-```
-
-The checks validate:
-- Duplicate primary keys
-- Broken relationships
-- Impossible dates
-- Invalid premium values
-- Annualized-premium consistency
-- Payment anomalies
-- Policy-status consistency
-- Lead-conversion consistency
-- Agent-exit consistency
-
-### 8. Begin analysis
-
-Start with:
-
-```text
-notebooks/01_agency_overview.ipynb
-```
+Review [the generated quality report](docs/data_quality_report.md),
+[baseline defects and corrections](docs/phase2_baseline.md), and
+[execution evidence](docs/phase2_verification.md). Run
+`sql/03_data_understanding.sql` for descriptive coverage. Phase 2 ends with
+validated data; Agency KPI analysis, Power BI and machine learning are later work.
 
 ---
 
 ## Current Build Status
 
 ### Completed
+
 - [x] Insurance business framing
 - [x] Agency analytics problem definition
 - [x] Relational insurance data model
@@ -543,9 +526,12 @@ notebooks/01_agency_overview.ipynb
 - [x] Initial synthetic insurance portfolio
 - [x] Data-quality SQL checks
 - [x] Starter Agency overview notebook
+- [x] PostgreSQL data loading workflow
+- [x] Python validation and generated quality report
+- [x] PostgreSQL reconciliation and transactional rollback tests
 
 ### In Development
-- [ ] PostgreSQL data loading workflow
+
 - [ ] Agency performance analysis
 - [ ] Target-performance analysis
 - [ ] Persistency cohort analysis
