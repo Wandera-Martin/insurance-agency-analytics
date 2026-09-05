@@ -53,7 +53,7 @@ profiles = {
     "High-volume risk":  {"weight": .12, "conv": .33, "lapse": .22,  "prod": 1.55},
     "Steady":            {"weight": .42, "conv": .22, "lapse": .10,  "prod": 1.00},
     "Developing":        {"weight": .20, "conv": .13, "lapse": .15,  "prod": .68},
-    "Inactive-risk":     dict(weight=.08, conv=.07, lapse=.18,  prod=.40),  # noqa: C408
+    "Inactive-risk":     {"weight": .08, "conv": .07, "lapse": .18,  "prod": .40},
 }
 pnames=list(profiles)
 pweights=[profiles[p]["weight"] for p in pnames]
