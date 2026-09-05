@@ -1,0 +1,119 @@
+BEGIN
+SET
+        dataset        |           grain           |  rows
+-----------------------+---------------------------+--------
+ agency_units          | one agency unit           |     12
+ agents                | one agent                 |    400
+ customers             | one customer              |  25000
+ incentives            | one agent/campaign        |    750
+ leads                 | one lead                  |  70000
+ policies              | one policy                |  35000
+ policy_status_history | one lifecycle event       |  39452
+ premium_payments      | one scheduled installment | 410316
+ sales_targets         | one agent/month           |   7044
+(9 rows)
+
+      event      | first_date | last_date
+-----------------+------------+------------
+ target month    | 2025-01-01 | 2026-09-01
+ status event    | 2023-01-01 | 2026-09-01
+ policy issue    | 2023-01-01 | 2026-09-01
+ lead created    | 2023-01-01 | 2026-09-01
+ cash received   | 2023-01-01 | 2026-09-01
+ installment due | 2023-01-01 | 2026-09-01
+(6 rows)
+
+ policy_status | policies
+---------------+----------
+ Active        |    30548
+ Grace         |      853
+ Lapsed        |     2996
+ Surrendered   |      603
+(4 rows)
+
+    product_name    | payment_frequency | policies | min_installment_ugx | max_installment_ugx | annualized_premium_ugx
+--------------------+-------------------+----------+---------------------+---------------------+------------------------
+ Education Builder  | Annual            |      681 |          1080000.00 |          4200000.00 |          1758060000.00
+ Education Builder  | Monthly           |     4814 |            90000.00 |           350000.00 |         12793980000.00
+ Education Builder  | Quarterly         |     1041 |           270000.00 |          1050000.00 |          2710440000.00
+ Education Builder  | Semi-Annual       |      449 |           540000.00 |          2100000.00 |          1160520000.00
+ Family Income Plan | Annual            |      662 |           960000.00 |          3600000.00 |          1498920000.00
+ Family Income Plan | Monthly           |     4966 |            80000.00 |           300000.00 |         11347980000.00
+ Family Income Plan | Quarterly         |      985 |           240000.00 |           900000.00 |          2271480000.00
+ Family Income Plan | Semi-Annual       |      415 |           480000.00 |          1800000.00 |           935700000.00
+ Protection Plus    | Annual            |      707 |           840000.00 |          2640000.00 |          1229700000.00
+ Protection Plus    | Monthly           |     4897 |            70000.00 |           220000.00 |          8484420000.00
+ Protection Plus    | Quarterly         |      978 |           210000.00 |           660000.00 |          1705440000.00
+ Protection Plus    | Semi-Annual       |      377 |           420000.00 |          1320000.00 |           657120000.00
+ Retirement Secure  | Annual            |      690 |          1800000.00 |          7800000.00 |          3251940000.00
+ Retirement Secure  | Monthly           |     4838 |           150000.00 |           650000.00 |         23061120000.00
+ Retirement Secure  | Quarterly         |      993 |           450000.00 |          1950000.00 |          4722720000.00
+ Retirement Secure  | Semi-Annual       |      442 |           900000.00 |          3900000.00 |          2135400000.00
+ Savings Growth     | Annual            |      716 |          1440000.00 |          6000000.00 |          2695380000.00
+ Savings Growth     | Monthly           |     4897 |           120000.00 |           500000.00 |         18224760000.00
+ Savings Growth     | Quarterly         |     1004 |           360000.00 |          1500000.00 |          3761760000.00
+ Savings Growth     | Semi-Annual       |      448 |           720000.00 |          3000000.00 |          1664340000.00
+(20 rows)
+
+ payment_status | installments |     due_ugx     |    paid_ugx     | no_payment_date
+----------------+--------------+-----------------+-----------------+-----------------
+ Late           |        49225 |  17281445000.00 |  17281445000.00 |               0
+ Missed         |        20229 |   7036115000.00 |            0.00 |           20229
+ Paid           |       330751 | 114205340000.00 | 114205340000.00 |               0
+ Partial        |        10111 |   3499600000.00 |   2018580369.54 |               0
+(4 rows)
+
+ leads_without_customer | unconverted_without_date | invalid_converted_customer | invalid_converted_date
+------------------------+--------------------------+----------------------------+------------------------
+                  54306 |                    54306 |                          0 |                      0
+(1 row)
+
+ agency_unit_id |   agency_name   |  region  | registered_agents
+----------------+-----------------+----------+-------------------
+ U001           | Kampala Central | Central  |                30
+ U002           | Kampala East    | Central  |                34
+ U003           | Kampala North   | Central  |                39
+ U004           | Wakiso          | Central  |                37
+ U005           | Entebbe         | Central  |                25
+ U006           | Jinja           | Eastern  |                27
+ U007           | Mbale           | Eastern  |                36
+ U008           | Mbarara         | Western  |                28
+ U009           | Fort Portal     | Western  |                45
+ U010           | Gulu            | Northern |                32
+ U011           | Lira            | Northern |                42
+ U012           | Masaka          | Central  |                25
+(12 rows)
+
+ target_month | agent_targets | complete_month
+--------------+---------------+----------------
+ 2025-01-01   |           274 | t
+ 2025-02-01   |           284 | t
+ 2025-03-01   |           295 | t
+ 2025-04-01   |           304 | t
+ 2025-05-01   |           308 | t
+ 2025-06-01   |           310 | t
+ 2025-07-01   |           316 | t
+ 2025-08-01   |           324 | t
+ 2025-09-01   |           329 | t
+ 2025-10-01   |           334 | t
+ 2025-11-01   |           341 | t
+ 2025-12-01   |           345 | t
+ 2026-01-01   |           352 | t
+ 2026-02-01   |           355 | t
+ 2026-03-01   |           358 | t
+ 2026-04-01   |           365 | t
+ 2026-05-01   |           370 | t
+ 2026-06-01   |           374 | t
+ 2026-07-01   |           371 | t
+ 2026-08-01   |           368 | t
+ 2026-09-01   |           367 | f
+(21 rows)
+
+       campaign_name       |   starts   |    ends    | participants | simulated_qualifiers
+---------------------------+------------+------------+--------------+----------------------
+ Q4 Growth Sprint          | 2025-10-01 | 2025-12-31 |          250 |                  105
+ Protection Push           | 2026-03-01 | 2026-04-30 |          250 |                  113
+ Mid-Year Agency Challenge | 2026-06-01 | 2026-07-31 |          250 |                  118
+(3 rows)
+
+COMMIT
