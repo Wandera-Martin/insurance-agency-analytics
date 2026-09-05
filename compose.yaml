@@ -1,0 +1,18 @@
+services:
+  postgres:
+    image: postgres:17.6
+    environment:
+      POSTGRES_DB: insurance_agency_analytics
+      POSTGRES_USER: agency
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in your environment}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-55432}:5432"
+    volumes:
+      - phase2_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agency -d insurance_agency_analytics"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+volumes:
+  phase2_postgres:

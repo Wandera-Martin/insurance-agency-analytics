@@ -4,15 +4,6 @@
 CREATE SCHEMA IF NOT EXISTS insurance_analytics;
 SET search_path TO insurance_analytics;
 
-DROP TABLE IF EXISTS incentives CASCADE;
-DROP TABLE IF EXISTS sales_targets CASCADE;
-DROP TABLE IF EXISTS policy_status_history CASCADE;
-DROP TABLE IF EXISTS premium_payments CASCADE;
-DROP TABLE IF EXISTS policies CASCADE;
-DROP TABLE IF EXISTS leads CASCADE;
-DROP TABLE IF EXISTS agents CASCADE;
-DROP TABLE IF EXISTS agency_units CASCADE;
-DROP TABLE IF EXISTS customers CASCADE;
 
 CREATE TABLE customers (
     customer_id VARCHAR(20) PRIMARY KEY,
