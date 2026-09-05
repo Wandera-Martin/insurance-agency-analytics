@@ -1,0 +1,8 @@
+pandas>=2.2
+numpy>=2.0
+faker>=30.0
+psycopg[binary]>=3.2
+sqlalchemy>=2.0
+jupyter>=1.1
+matplotlib>=3.9
+scikit-learn>=1.5
