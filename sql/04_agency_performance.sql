@@ -29,9 +29,9 @@ WITH production AS (
 ), base AS (
     SELECT m.period_start, m.period_end, u.region, u.agency_unit_id, u.agency_name,
            a.agent_id, a.agent_grade, a.join_date, a.exit_date,
-           CASE WHEN a.join_date > m.period_start - INTERVAL '6 months' THEN '0-<6 months'
-                WHEN a.join_date > m.period_start - INTERVAL '12 months' THEN '6-<12 months'
-                WHEN a.join_date > m.period_start - INTERVAL '24 months' THEN '12-<24 months'
+           CASE WHEN a.join_date > m.period_end - INTERVAL '6 months' THEN '0-<6 months'
+                WHEN a.join_date > m.period_end - INTERVAL '12 months' THEN '6-<12 months'
+                WHEN a.join_date > m.period_end - INTERVAL '24 months' THEN '12-<24 months'
                 ELSE '24+ months' END AS tenure_band,
            COALESCE(p.new_policies, 0) AS new_policies,
            COALESCE(p.new_business_annualized_premium, 0) AS new_business_annualized_premium,

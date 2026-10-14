@@ -83,6 +83,28 @@ def test_reporting_boundaries_eligibility_and_distinct_producers(metrics):
     assert len(periods) == 44
 
 
+def test_tenure_is_measured_at_reporting_period_end(metrics):
+    metrics.execute("""
+        INSERT INTO agents (agent_id,agency_unit_id,join_date,status,exit_date,agent_grade)
+        VALUES ('B6','U1','2026-03-01','Active',NULL,'Junior'),
+               ('B12','U1','2025-09-01','Active',NULL,'Junior'),
+               ('B24','U1','2024-09-01','Active',NULL,'Junior')
+    """)
+    rows = metrics.execute("""
+        SELECT agent_id, tenure_band
+        FROM agency_performance.agent_month
+        WHERE period_start = DATE '2026-08-01'
+          AND agent_id IN ('A2', 'B6', 'B12', 'B24')
+    """).fetchall()
+    bands = {row["agent_id"]: row["tenure_band"] for row in rows}
+    assert bands == {
+        "A2": "0-<6 months",       # Joined during the reporting month.
+        "B6": "6-<12 months",      # Exactly six months old at period end.
+        "B12": "12-<24 months",    # Exactly 12 months old at period end.
+        "B24": "24+ months",       # Exactly 24 months old at period end.
+    }
+
+
 def test_target_sums_separate_achievers_and_missing_targets(metrics):
     row = august(metrics)
     assert row["policy_target"] == 20

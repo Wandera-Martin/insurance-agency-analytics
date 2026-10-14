@@ -138,7 +138,7 @@ silently pooled. Early-exit exclusion avoids comparing unequal exposure and
 conditions the rate on full service; it must not hide onboarding attrition.
 Exclusion counts may overlap. `activation_cohorts` groups by recruitment month.
 
-Tenure at reporting-month start uses disclosed bands 0–<6, 6–<12, 12–<24 and 24+
+Tenure at reporting-period end uses disclosed bands 0–<6, 6–<12, 12–<24 and 24+
 calendar months; agents joining within the month enter the first band. These are
 descriptive cuts, not performance thresholds. Grade uses the recorded current
 agent_grade, including unknown values.
