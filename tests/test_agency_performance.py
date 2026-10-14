@@ -98,10 +98,10 @@ def test_tenure_is_measured_at_reporting_period_end(metrics):
     """).fetchall()
     bands = {row["agent_id"]: row["tenure_band"] for row in rows}
     assert bands == {
-        "A2": "0-<6 months",       # Joined during the reporting month.
-        "B6": "6-<12 months",      # Exactly six months old at period end.
-        "B12": "12-<24 months",    # Exactly 12 months old at period end.
-        "B24": "24+ months",       # Exactly 24 months old at period end.
+        "A2": "0-<6 months",  # Joined during the reporting month.
+        "B6": "6-<12 months",  # Exactly six months old at period end.
+        "B12": "12-<24 months",  # Exactly 12 months old at period end.
+        "B24": "24+ months",  # Exactly 24 months old at period end.
     }
 
 

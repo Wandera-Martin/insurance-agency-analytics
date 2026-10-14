@@ -1,4 +1,4 @@
-name: Phase 2 validation
+name: Insurance analytics validation
 on: [push, pull_request, workflow_dispatch]
 jobs:
   validate:
@@ -16,24 +16,48 @@ jobs:
           --health-interval 5s --health-timeout 5s --health-retries 12
     env:
       DATABASE_URL: postgresql://agency:synthetic-ci-only@localhost:5432/insurance_agency_analytics
-      TEST_DATABASE_URL: postgresql://agency:synthetic-ci-only@localhost:5432/postgres
+      TEST_DATABASE_URL: postgresql://agency:synthetic-ci-only@localhost:5432/insurance_agency_analytics_test
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: pip
-          cache-dependency-path: requirements-phase2.txt
-      - run: python -m pip install -r requirements-phase2.txt
-      - run: python -m ruff check .
-      - run: python -m ruff format --check .
-      - run: python -m pytest -q
-      - run: python src/generate_synthetic_data.py
-      - run: python src/load_postgres.py
-      - run: python src/data_quality.py --database
-      - run: psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -f sql/02_quality_checks.sql
-      - run: psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -f sql/03_data_understanding.sql
+          cache-dependency-path: requirements-phase3.txt
+      - name: Install Phase 3 dependencies
+        run: python -m pip install -r requirements-phase3.txt
+      - name: Lint
+        run: python -m ruff check .
+      - name: Check formatting
+        run: python -m ruff format --check .
+      - name: Generate deterministic synthetic data
+        run: python src/generate_synthetic_data.py
+      - name: Load PostgreSQL snapshot
+        run: python src/load_postgres.py
+      - name: Validate PostgreSQL snapshot
+        run: python src/data_quality.py --database
+      - name: Run SQL quality checks
+        run: psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -f sql/02_quality_checks.sql
+      - name: Run SQL data-understanding layer
+        run: psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -f sql/03_data_understanding.sql
+      - name: Install Phase 3 metric views
+        run: >-
+          psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 --single-transaction
+          -f sql/04_agency_performance.sql
+      - name: Create disposable integration-test database
+        run: >-
+          psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1
+          -c "CREATE DATABASE insurance_agency_analytics_test"
+      - name: Run full test suite
+        run: python -m pytest -q
+      - name: Export validated Phase 3 outputs
+        run: python src/agency_performance.py
+      - name: Execute Phase 3 notebook
+        run: python src/execute_phase3_notebook.py
       - uses: actions/upload-artifact@v4
         with:
-          name: phase2-quality-report
-          path: docs/data_quality_report.md
+          name: phase3-validation-artifacts
+          path: |
+            docs/data_quality_report.md
+            data/processed/phase3/
+            notebooks/02_agency_performance.ipynb
