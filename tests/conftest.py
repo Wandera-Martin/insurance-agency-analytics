@@ -1,11 +1,30 @@
 """Small, internally consistent synthetic portfolio for adversarial checks."""
 
 import json
+import os
 
 import pandas as pd
+import psycopg
 import pytest
 
-from dataset import CONTRACT, manifest
+from dataset import CONTRACT, SCHEMA, manifest
+
+
+@pytest.fixture
+def connection():
+    """Rollback-only integration connection to an explicitly disposable database."""
+    dsn = os.environ.get("TEST_DATABASE_URL")
+    if not dsn:
+        pytest.skip("TEST_DATABASE_URL is required for PostgreSQL integration tests")
+    with psycopg.connect(dsn) as conn:
+        assert not conn.execute(
+            "SELECT 1 FROM pg_namespace WHERE nspname IN (%s, %s)",
+            (SCHEMA, "agency_performance"),
+        ).fetchone(), "Use a disposable database with no analytics schemas"
+        try:
+            yield conn
+        finally:
+            conn.rollback()
 
 
 @pytest.fixture

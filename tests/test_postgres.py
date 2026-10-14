@@ -1,28 +1,11 @@
 """Real PostgreSQL tests; use only a dedicated TEST_DATABASE_URL database."""
 
-import os
-
 import psycopg
 import pytest
 
 from data_quality import read_database, reconcile
 from dataset import CONTRACT, ROOT, SCHEMA, read_csvs
 from load_postgres import load
-
-
-@pytest.fixture
-def connection():
-    dsn = os.environ.get("TEST_DATABASE_URL")
-    if not dsn:
-        pytest.skip("TEST_DATABASE_URL is required for PostgreSQL integration tests")
-    with psycopg.connect(dsn) as conn:
-        assert not conn.execute(
-            "SELECT 1 FROM pg_namespace WHERE nspname = %s", (SCHEMA,)
-        ).fetchone(), "Use a disposable database with no insurance_analytics schema"
-        try:
-            yield conn
-        finally:
-            conn.rollback()
 
 
 def test_load_contract_rerun_and_replacement(connection, csv_directory):
@@ -47,6 +30,8 @@ def test_load_contract_rerun_and_replacement(connection, csv_directory):
         assert actual == [
             (name, "NO" if spec["required"] else "YES") for name, spec in fields.items()
         ]
+    # Ordinary analytics views must not break the existing loader's table contract.
+    connection.execute((ROOT / "sql/04_agency_performance.sql").read_text())
     with pytest.raises(ValueError, match="contain rows"), connection.transaction():
         load(connection, csv_directory)
     load(connection, csv_directory, replace=True)
