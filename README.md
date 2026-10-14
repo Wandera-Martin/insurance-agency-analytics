@@ -167,7 +167,7 @@ agency_units
 | `customers` | Customer demographics and segmentation attributes |
 | `agency_units` | Agency structure, location and management units |
 | `agents` | Agent profile, tenure, grade and status |
-| `leads` | Sales-funnel activity from lead creation to conversion |
+| `leads` | Recorded lead-stage evidence from lead creation to conversion |
 | `policies` | Core insurance contract and premium information |
 | `premium_payments` | Premium due dates, payments and payment behaviour |
 | `policy_status_history` | Policy lifecycle changes over time |
@@ -304,34 +304,39 @@ The goal is to convert insurance data into **management decisions**.
 
 ---
 
-## Planned Analysis
+## Completed Phase 3 Analysis
 
 ### 1. Agency Performance Analysis
-Measure:
+
+Measures:
+
 - Policies issued
 - Annualized premium
-- Active agents
-- Policies per agent
+- Eligible and producing agents
+- Policies per producing agent
 - Target achievement
 - Performance by region and Agency unit
 
-### 2. Agent Sales Funnel
+### 2. Lead Stage Evidence Analysis
 
-```text
-Lead
-  ↓
-Contact
-  ↓
-Appointment
-  ↓
-Application
-  ↓
-Policy Issued
-```
+Reports recorded contact, appointment, application and conversion evidence for
+lead-creation cohorts. The statuses are not timestamped, are not guaranteed to
+form a sequential funnel, and cannot be attributed directly to policies because
+policies do not contain `lead_id`.
 
-Measure conversion at every stage.
+### 3. Agent Analysis
 
-### 3. Persistency Analysis
+Includes agent productivity, separate policy and premium target distributions,
+first-30-day activation, descriptive tenure and grade cuts, and production
+concentration among the top 10% of producing agents.
+
+See [the Phase 3 metric contract](docs/phase3_metric_definitions.md),
+[executed findings](docs/phase3_findings.md), and
+[analysis notebook](notebooks/02_agency_performance.ipynb).
+
+## Future Analysis
+
+### 1. Persistency Analysis
 Compare policy retention by:
 - Agent
 - Agency unit
@@ -345,14 +350,14 @@ with emphasis on:
 - 6-month persistency
 - 13-month persistency
 
-### 4. Agent Quality vs Volume
+### 2. Agent Quality vs Persistency
 
 | | High Persistency | Low Persistency |
 |---|---|---|
 | **High Sales** | Star Agents | High-Volume Risk |
 | **Low Sales** | Development Opportunity | Intervention Required |
 
-### 5. Incentive Effectiveness
+### 3. Incentive Effectiveness
 
 ```text
 Before Incentive
@@ -364,7 +369,7 @@ After Incentive
 
 Evaluate both sales uplift and subsequent persistency.
 
-### 6. Lapse-Risk Analysis
+### 4. Lapse-Risk Analysis
 
 Potential risk signals include:
 - Missed premiums
@@ -393,7 +398,7 @@ A simple predictive model will be developed to support retention prioritization.
 - Agency-unit performance
 - Agent ranking
 - Target vs Actual
-- Sales funnel
+- Lead Stage Evidence Analysis
 - Productivity trends
 - Quality vs Volume segmentation
 
@@ -430,20 +435,29 @@ insurance-agency-analytics/
     phase2_verification.md
     data_quality_report.md
     data_understanding_output.txt
+    phase3_metric_definitions.md
+    phase3_findings.md
   sql/
     01_schema.sql
     02_quality_checks.sql
     03_data_understanding.sql
+    04_agency_performance.sql
   src/
     generate_synthetic_data.py
     dataset.py
     dataset_contract.json
     data_quality.py
     load_postgres.py
+    agency_performance.py
+    execute_phase3_notebook.py
   tests/
-  notebooks/01_agency_overview.ipynb
+    test_agency_performance.py
+  notebooks/
+    01_agency_overview.ipynb
+    02_agency_performance.ipynb
   powerbi/README.md
   requirements-phase2.txt
+  requirements-phase3.txt
   requirements.txt
   pyproject.toml
   README.md
@@ -507,8 +521,21 @@ the synthetic snapshot atomically.
 Review [the generated quality report](docs/data_quality_report.md),
 [baseline defects and corrections](docs/phase2_baseline.md), and
 [execution evidence](docs/phase2_verification.md). Run
-`sql/03_data_understanding.sql` for descriptive coverage. Phase 2 ends with
-validated data; Agency KPI analysis, Power BI and machine learning are later work.
+`sql/03_data_understanding.sql` for descriptive coverage.
+
+### 6. Run Phase 3 Agency performance analytics
+
+Install `requirements-phase3.txt`, apply `sql/04_agency_performance.sql` to the
+validated PostgreSQL snapshot, then run:
+
+```bash
+python src/agency_performance.py
+python src/execute_phase3_notebook.py
+```
+
+The SQL metric layer, exported results and notebook all use the fixed
+1 September 2026 snapshot. September 2026 is incomplete and excluded from
+complete-month comparisons.
 
 ---
 
@@ -529,16 +556,23 @@ validated data; Agency KPI analysis, Power BI and machine learning are later wor
 - [x] PostgreSQL data loading workflow
 - [x] Python validation and generated quality report
 - [x] PostgreSQL reconciliation and transactional rollback tests
+- [x] Agency performance analytics
+- [x] Regional and agency-unit performance
+- [x] Agent productivity analysis
+- [x] Target-performance analysis
+- [x] Lead Stage Evidence analysis
+- [x] Agent activation analysis
+- [x] Tenure and grade analysis
+- [x] Production concentration analysis
 
-### In Development
+### Future Work
 
-- [ ] Agency performance analysis
-- [ ] Target-performance analysis
 - [ ] Persistency cohort analysis
-- [ ] Agent quality vs volume segmentation
+- [ ] Agent quality vs persistency segmentation
 - [ ] Incentive-effectiveness analysis
 - [ ] Lapse-risk modelling
 - [ ] Power BI management dashboard
+- [ ] Final case study
 
 ---
 
@@ -594,11 +628,11 @@ Business Understanding + Data Model
 
 Phase 2
 Database Loading + Data Quality
-            ↓
+            ✓
 
 Phase 3
 Agency Performance Analytics
-            ↓
+            ✓
 
 Phase 4
 Persistency + Retention Analytics
