@@ -54,10 +54,20 @@ jobs:
         run: python src/agency_performance.py
       - name: Execute Phase 3 notebook
         run: python src/execute_phase3_notebook.py
+      - name: Install Phase 4 metric views
+        run: >-
+          psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 --single-transaction
+          -f sql/05_persistency_retention.sql
+      - name: Export validated Phase 4 outputs
+        run: python src/persistency_retention.py
+      - name: Execute Phase 4 notebook
+        run: python src/execute_phase4_notebook.py
       - uses: actions/upload-artifact@v4
         with:
-          name: phase3-validation-artifacts
+          name: phase2-through-phase4-validation-artifacts
           path: |
             docs/data_quality_report.md
             data/processed/phase3/
+            data/processed/phase4/
             notebooks/02_agency_performance.ipynb
+            notebooks/03_persistency_retention.ipynb

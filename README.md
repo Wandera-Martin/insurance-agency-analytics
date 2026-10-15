@@ -334,30 +334,35 @@ See [the Phase 3 metric contract](docs/phase3_metric_definitions.md),
 [executed findings](docs/phase3_findings.md), and
 [analysis notebook](notebooks/02_agency_performance.ipynb).
 
+## Completed Phase 4 Analysis
+
+### Persistency and Retention
+
+Phase 4 reconstructs historical status at each eligible 3M, 6M and 13M policy
+anniversary. It reports policy-count and annualized-premium persistency across
+issue cohorts, Agency hierarchy, products, payment frequencies and customer
+segments. Immature policies do not enter denominators; Matured policies are
+reported separately and are not treated as retention failures.
+
+The SQL layer also keeps lapse, surrender and cancellation distinct, describes
+outcome timing, and compares installment-status rates using only payments due by
+each anniversary. The analysis is descriptive and does not make causal or
+predictive claims.
+
+See [the Phase 4 metric contract](docs/phase4_metric_definitions.md),
+[executed findings](docs/phase4_findings.md), and
+[analysis notebook](notebooks/03_persistency_retention.ipynb).
+
 ## Future Analysis
 
-### 1. Persistency Analysis
-Compare policy retention by:
-- Agent
-- Agency unit
-- Product
-- Customer segment
-- Payment frequency
-- Policy cohort
-
-with emphasis on:
-- 3-month persistency
-- 6-month persistency
-- 13-month persistency
-
-### 2. Agent Quality vs Persistency
+### 1. Agent Quality vs Persistency
 
 | | High Persistency | Low Persistency |
 |---|---|---|
 | **High Sales** | Star Agents | High-Volume Risk |
 | **Low Sales** | Development Opportunity | Intervention Required |
 
-### 3. Incentive Effectiveness
+### 2. Incentive Effectiveness
 
 ```text
 Before Incentive
@@ -369,7 +374,7 @@ After Incentive
 
 Evaluate both sales uplift and subsequent persistency.
 
-### 4. Lapse-Risk Analysis
+### 3. Lapse-Risk Analysis
 
 Potential risk signals include:
 - Missed premiums
@@ -437,11 +442,14 @@ insurance-agency-analytics/
     data_understanding_output.txt
     phase3_metric_definitions.md
     phase3_findings.md
+    phase4_metric_definitions.md
+    phase4_findings.md
   sql/
     01_schema.sql
     02_quality_checks.sql
     03_data_understanding.sql
     04_agency_performance.sql
+    05_persistency_retention.sql
   src/
     generate_synthetic_data.py
     dataset.py
@@ -450,11 +458,15 @@ insurance-agency-analytics/
     load_postgres.py
     agency_performance.py
     execute_phase3_notebook.py
+    persistency_retention.py
+    execute_phase4_notebook.py
   tests/
     test_agency_performance.py
+    test_persistency_retention.py
   notebooks/
     01_agency_overview.ipynb
     02_agency_performance.ipynb
+    03_persistency_retention.ipynb
   powerbi/README.md
   requirements-phase2.txt
   requirements-phase3.txt
@@ -537,6 +549,20 @@ The SQL metric layer, exported results and notebook all use the fixed
 1 September 2026 snapshot. September 2026 is incomplete and excluded from
 complete-month comparisons.
 
+### 7. Run Phase 4 persistency and retention analytics
+
+Apply `sql/05_persistency_retention.sql` to the same validated PostgreSQL
+snapshot, then run:
+
+```bash
+python src/persistency_retention.py
+python src/execute_phase4_notebook.py
+```
+
+Phase 4 exports the trusted SQL views to `data/processed/phase4/`, records SQL and
+output hashes in `execution.json`, reconciles all analytical cuts, and executes
+the management-analysis notebook.
+
 ---
 
 ## Current Build Status
@@ -564,10 +590,15 @@ complete-month comparisons.
 - [x] Agent activation analysis
 - [x] Tenure and grade analysis
 - [x] Production concentration analysis
+- [x] 3M, 6M and 13M count and premium persistency
+- [x] Historical anniversary-status reconstruction
+- [x] Persistency cohort and hierarchy analysis
+- [x] Product, payment-frequency and customer-segment retention analysis
+- [x] Lapse timing and pre-anniversary payment diagnostics
+- [x] Phase 4 PostgreSQL tests, reconciled exports and executed notebook
 
 ### Future Work
 
-- [ ] Persistency cohort analysis
 - [ ] Agent quality vs persistency segmentation
 - [ ] Incentive-effectiveness analysis
 - [ ] Lapse-risk modelling
@@ -636,7 +667,7 @@ Agency Performance Analytics
 
 Phase 4
 Persistency + Retention Analytics
-            ↓
+            ✓
 
 Phase 5
 Agent Segmentation + Incentive Analysis

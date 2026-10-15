@@ -2,7 +2,7 @@
 
 **Result: PASS — PostgreSQL validated**
 
-- Run (UTC): 2026-09-05T22:47:04.698319+00:00
+- Run (UTC): 2026-10-15T11:28:23.085636+00:00
 - Scope: PostgreSQL + CSV reconciliation
 - Synthetic snapshot: 2026-09-01; seed: 42
 - All records are synthetic.
