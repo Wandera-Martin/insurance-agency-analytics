@@ -3,7 +3,7 @@ file,bytes
 .github/workflows/phase2.yml,3103
 .gitignore,122
 FILE_INVENTORY.csv,1355
-README.md,18060
+README.md,18032
 compose.yaml,547
 docs/data_dictionary.md,6391
 docs/data_quality_report.md,40931
