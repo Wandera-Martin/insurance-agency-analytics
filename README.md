@@ -334,7 +334,7 @@ See [the Phase 3 metric contract](docs/phase3_metric_definitions.md),
 [executed findings](docs/phase3_findings.md), and
 [analysis notebook](notebooks/02_agency_performance.ipynb).
 
-## Completed Phase 4 Analysis
+## Implemented Phase 4 Analysis (CI Pending)
 
 ### Persistency and Retention
 
@@ -667,7 +667,7 @@ Agency Performance Analytics
 
 Phase 4
 Persistency + Retention Analytics
-            ✓
+       CI validation pending
 
 Phase 5
 Agent Segmentation + Incentive Analysis
