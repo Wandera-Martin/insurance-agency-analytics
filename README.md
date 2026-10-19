@@ -372,7 +372,9 @@ See [the Phase 5 metric contract](docs/phase5_metric_definitions.md),
 [executed findings](docs/phase5_findings.md), and
 [analysis notebook](notebooks/04_agent_segmentation_incentives.ipynb).
 
-## Phase 6 Lapse-Risk Modelling — Locally Verified, Pending CI
+## Completed Phase 6 Analysis
+
+### Lapse-Risk Modelling
 
 Phase 6 reconstructs policy status and payment behaviour at historical month-end
 observations and predicts entry into `Lapsed` status over the following 90 days.
@@ -646,10 +648,10 @@ test. Generated outputs are written under `data/processed/phase6/`.
 - [x] Lapse timing and pre-anniversary payment diagnostics
 - [x] Phase 4 PostgreSQL tests, reconciled exports and executed notebook
 - [x] Phase 5 agent segmentation and incentive analysis
+- [x] Phase 6 lapse-risk modelling, current scoring and model-risk diagnostics
 
 ### Future Work
 
-- [ ] Lapse-risk modelling
 - [ ] Power BI management dashboard
 - [ ] Final case study
 
@@ -723,7 +725,7 @@ Agent Segmentation + Incentive Analysis
 
 Phase 6
 Lapse-Risk Modelling
-            ↓
+            ✓
 
 Phase 7
 Power BI Management Dashboard
