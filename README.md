@@ -353,7 +353,7 @@ See [the Phase 4 metric contract](docs/phase4_metric_definitions.md),
 [executed findings](docs/phase4_findings.md), and
 [analysis notebook](notebooks/03_persistency_retention.ipynb).
 
-## Completed Phase 5 Analysis
+## Implemented Phase 5 Analysis — Pending CI Publication
 
 ### Agent Segmentation and Incentive Analysis
 
@@ -371,6 +371,8 @@ causal effect, ROI, cost effectiveness or predictive model is estimated.
 See [the Phase 5 metric contract](docs/phase5_metric_definitions.md),
 [executed findings](docs/phase5_findings.md), and
 [analysis notebook](notebooks/04_agent_segmentation_incentives.ipynb).
+
+Phase 5 remains pending until its GitHub Actions run is green.
 
 ## Future Analysis
 
@@ -617,7 +619,10 @@ records output hashes, and executes the management notebook.
 - [x] Product, payment-frequency and customer-segment retention analysis
 - [x] Lapse timing and pre-anniversary payment diagnostics
 - [x] Phase 4 PostgreSQL tests, reconciled exports and executed notebook
-- [x] Phase 5 agent segmentation and incentive analysis
+
+### Locally Implemented — Awaiting Green CI
+
+- [ ] Phase 5 agent segmentation and incentive analysis
 
 ### Future Work
 
@@ -691,7 +696,7 @@ Persistency + Retention Analytics
 
 Phase 5
 Agent Segmentation + Incentive Analysis
-            ✓
+            ↓
 
 Phase 6
 Lapse-Risk Modelling
