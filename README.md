@@ -372,19 +372,24 @@ See [the Phase 5 metric contract](docs/phase5_metric_definitions.md),
 [executed findings](docs/phase5_findings.md), and
 [analysis notebook](notebooks/04_agent_segmentation_incentives.ipynb).
 
-## Future Analysis
+## Phase 6 Lapse-Risk Modelling — Locally Verified, Pending CI
 
-### 1. Lapse-Risk Analysis
+Phase 6 reconstructs policy status and payment behaviour at historical month-end
+observations and predicts entry into `Lapsed` status over the following 90 days.
+The workflow uses a temporal train/validation/test split, freezes model selection
+before one held-out test evaluation, and scores current eligible policies only
+after that evaluation.
 
-Potential risk signals include:
-- Missed premiums
-- Late payments
-- Policy tenure
-- Payment frequency
-- Product type
-- Agent historical persistency
+Random Forest was selected on validation over Logistic Regression. Test ranking
+was modest (PR-AUC 0.0342; Recall@10% 12.38%; Lift@10% 1.24), while calibration
+showed material later-period underprediction: mean score 1.58% versus 2.87%
+observed. Scores are therefore framed as retention-prioritization indices, not
+exact probabilities or inputs to adverse automated action.
 
-A simple predictive model will be developed to support retention prioritization.
+See [the Phase 6 model contract](docs/phase6_model_definitions.md),
+[historical-panel checkpoint](docs/phase6_panel_checkpoint.md),
+[executed findings](docs/phase6_findings.md), and
+[analysis notebook](notebooks/05_lapse_risk_model.ipynb).
 
 ---
 
@@ -446,6 +451,9 @@ insurance-agency-analytics/
     phase4_findings.md
     phase5_metric_definitions.md
     phase5_findings.md
+    phase6_model_definitions.md
+    phase6_panel_checkpoint.md
+    phase6_findings.md
   sql/
     01_schema.sql
     02_quality_checks.sql
@@ -453,6 +461,7 @@ insurance-agency-analytics/
     04_agency_performance.sql
     05_persistency_retention.sql
     06_agent_segmentation_incentives.sql
+    07_lapse_risk_features.sql
   src/
     generate_synthetic_data.py
     dataset.py
@@ -465,15 +474,19 @@ insurance-agency-analytics/
     execute_phase4_notebook.py
     agent_segmentation_incentives.py
     execute_phase5_notebook.py
+    lapse_risk_model.py
+    execute_phase6_notebook.py
   tests/
     test_agency_performance.py
     test_persistency_retention.py
     test_agent_segmentation_incentives.py
+    test_lapse_risk.py
   notebooks/
     01_agency_overview.ipynb
     02_agency_performance.ipynb
     03_persistency_retention.ipynb
     04_agent_segmentation_incentives.ipynb
+    05_lapse_risk_model.ipynb
   powerbi/README.md
   requirements-phase2.txt
   requirements-phase3.txt
@@ -583,6 +596,21 @@ python src/execute_phase5_notebook.py
 Phase 5 exports its trusted views to `data/processed/phase5/`, validates the
 locked mature-history threshold, reconciles production and campaign attribution,
 records output hashes, and executes the management notebook.
+
+### 9. Run Phase 6 lapse-risk modelling
+
+Apply the leakage-safe historical layer, then run the single governed workflow:
+
+```bash
+psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 --single-transaction \
+  -f sql/07_lapse_risk_features.sql
+python src/lapse_risk_model.py
+python src/execute_phase6_notebook.py
+```
+
+The model command refuses to overwrite an existing freeze/test artifact. A rerun
+requires a fresh output directory and a documented defect invalidating the prior
+test. Generated outputs are written under `data/processed/phase6/`.
 
 ---
 
