@@ -2,9 +2,22 @@
 
 from decimal import Decimal
 
+import numpy as np
+import pandas as pd
+import pytest
 from psycopg.rows import dict_row
+from sklearn.linear_model import LogisticRegression
 
 from dataset import ROOT
+from lapse_risk_model import (
+    CATEGORICAL_FEATURES,
+    MODEL_FEATURES,
+    NUMERIC_FEATURES,
+    assign_risk_tiers,
+    build_pipeline,
+    calibration_diagnostics,
+    topk_metrics,
+)
 
 
 def _base(connection):
@@ -254,3 +267,84 @@ def test_sql_static_leakage_guards_and_fixed_clock():
         "days_until_lapse",
     ):
         assert forbidden not in text
+
+
+def test_current_scoring_population_is_target_free_and_historical(connection):
+    conn = _base(connection)
+    _policy(conn, "Eligible", "2025-01-01", final_status="Lapsed")
+    _policy(conn, "Adverse", "2025-01-01", final_status="Active")
+    _event(conn, "H-Adverse-1", "Adverse", "Lapsed", "2026-08-01")
+    _payment(conn, "PM-Eligible", "Eligible", "2026-08-01", None, 0, "Missed")
+    conn = _install(conn)
+
+    columns = {
+        row["column_name"]
+        for row in conn.execute("""
+            SELECT column_name FROM information_schema.columns
+            WHERE table_schema = 'lapse_risk'
+              AND table_name = 'current_scoring_population'
+        """)
+    }
+    assert "lapse_next_90d" not in columns
+    rows = conn.execute(
+        "SELECT policy_id, status_at_observation, policy_age_days "
+        "FROM lapse_risk.current_scoring_population ORDER BY policy_id"
+    ).fetchall()
+    assert [row["policy_id"] for row in rows] == ["Eligible"]
+    assert rows[0]["status_at_observation"] == "Active"
+    assert rows[0]["policy_age_days"] >= 30
+
+
+def _model_frame(rows=6):
+    frame = pd.DataFrame(index=range(rows))
+    for feature in NUMERIC_FEATURES:
+        frame[feature] = np.arange(rows, dtype=float) + 1
+    for feature in CATEGORICAL_FEATURES:
+        frame[feature] = ["A", "B"] * (rows // 2) + (["A"] if rows % 2 else [])
+    return frame
+
+
+def test_pipeline_handles_unseen_categories_and_excludes_gender():
+    frame = _model_frame()
+    pipeline = build_pipeline(LogisticRegression(max_iter=100))
+    pipeline.fit(frame[MODEL_FEATURES], [0, 1, 0, 1, 0, 1])
+    unseen = frame.iloc[[0]].copy()
+    unseen.loc[:, CATEGORICAL_FEATURES] = "Never seen"
+    probability = pipeline.predict_proba(unseen[MODEL_FEATURES])[:, 1]
+    assert probability.shape == (1,)
+    assert 0 <= probability[0] <= 1
+    assert "gender" not in MODEL_FEATURES
+
+
+def test_topk_metric_calculation():
+    rows = topk_metrics(
+        np.array([1, 0, 1, 0, 0, 0, 0, 0, 0, 0]),
+        np.array([0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.0]),
+        percentages=(0.20,),
+    )
+    assert rows[0]["selected_rows"] == 2
+    assert rows[0]["captured_positives"] == 1
+    assert rows[0]["recall_at_k"] == 0.5
+    assert rows[0]["lift_at_k"] == 2.5
+
+
+def test_calibration_metric_calculation():
+    summary, bins = calibration_diagnostics(
+        np.array([0, 0, 1, 1]), np.array([0.1, 0.2, 0.8, 0.9]), bins=2
+    )
+    assert summary["brier_score"] == pytest.approx(0.025)
+    assert summary["mean_predicted_risk"] == pytest.approx(0.5)
+    assert summary["observed_rate"] == pytest.approx(0.5)
+    assert len(bins) == 2
+
+
+def test_current_risk_tiers_follow_capacity_design():
+    tiers = assign_risk_tiers(
+        pd.Series(np.linspace(1, 0.1, 10)),
+        pd.Series([f"P{number}" for number in range(10)]),
+    )
+    assert tiers["risk_tier"].value_counts().to_dict() == {
+        "Routine": 7,
+        "Watch": 2,
+        "Priority": 1,
+    }
