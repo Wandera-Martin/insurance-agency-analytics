@@ -353,28 +353,28 @@ See [the Phase 4 metric contract](docs/phase4_metric_definitions.md),
 [executed findings](docs/phase4_findings.md), and
 [analysis notebook](notebooks/03_persistency_retention.ipynb).
 
+## Completed Phase 5 Analysis
+
+### Agent Segmentation and Incentive Analysis
+
+Phase 5 combines June–August 2026 production with demonstrated 13M premium
+persistency. Agents with at least 20 mature policies enter a rule-based 2×2 as
+Sustainable Leaders, Volume Risk, Quality Builders or Development Priority;
+other agents remain explicitly classified as Insufficient Mature History.
+
+The incentive component uses recorded campaign rosters and qualification flags,
+equal calendar-month Before/During/After windows, service-eligible agent-month
+normalization and Phase 4 policy follow-up. Incomplete windows and milestones are
+flagged rather than treated as fully comparable. Results are descriptive: no
+causal effect, ROI, cost effectiveness or predictive model is estimated.
+
+See [the Phase 5 metric contract](docs/phase5_metric_definitions.md),
+[executed findings](docs/phase5_findings.md), and
+[analysis notebook](notebooks/04_agent_segmentation_incentives.ipynb).
+
 ## Future Analysis
 
-### 1. Agent Quality vs Persistency
-
-| | High Persistency | Low Persistency |
-|---|---|---|
-| **High Sales** | Star Agents | High-Volume Risk |
-| **Low Sales** | Development Opportunity | Intervention Required |
-
-### 2. Incentive Effectiveness
-
-```text
-Before Incentive
-      ↓
-During Incentive
-      ↓
-After Incentive
-```
-
-Evaluate both sales uplift and subsequent persistency.
-
-### 3. Lapse-Risk Analysis
+### 1. Lapse-Risk Analysis
 
 Potential risk signals include:
 - Missed premiums
@@ -444,12 +444,15 @@ insurance-agency-analytics/
     phase3_findings.md
     phase4_metric_definitions.md
     phase4_findings.md
+    phase5_metric_definitions.md
+    phase5_findings.md
   sql/
     01_schema.sql
     02_quality_checks.sql
     03_data_understanding.sql
     04_agency_performance.sql
     05_persistency_retention.sql
+    06_agent_segmentation_incentives.sql
   src/
     generate_synthetic_data.py
     dataset.py
@@ -460,13 +463,17 @@ insurance-agency-analytics/
     execute_phase3_notebook.py
     persistency_retention.py
     execute_phase4_notebook.py
+    agent_segmentation_incentives.py
+    execute_phase5_notebook.py
   tests/
     test_agency_performance.py
     test_persistency_retention.py
+    test_agent_segmentation_incentives.py
   notebooks/
     01_agency_overview.ipynb
     02_agency_performance.ipynb
     03_persistency_retention.ipynb
+    04_agent_segmentation_incentives.ipynb
   powerbi/README.md
   requirements-phase2.txt
   requirements-phase3.txt
@@ -563,6 +570,20 @@ Phase 4 exports the trusted SQL views to `data/processed/phase4/`, records SQL a
 output hashes in `execution.json`, reconciles all analytical cuts, and executes
 the management-analysis notebook.
 
+### 8. Run Phase 5 agent intelligence analytics
+
+Apply `sql/06_agent_segmentation_incentives.sql` after the Phase 3 and Phase 4
+views, then run:
+
+```bash
+python src/agent_segmentation_incentives.py
+python src/execute_phase5_notebook.py
+```
+
+Phase 5 exports its trusted views to `data/processed/phase5/`, validates the
+locked mature-history threshold, reconciles production and campaign attribution,
+records output hashes, and executes the management notebook.
+
 ---
 
 ## Current Build Status
@@ -596,11 +617,10 @@ the management-analysis notebook.
 - [x] Product, payment-frequency and customer-segment retention analysis
 - [x] Lapse timing and pre-anniversary payment diagnostics
 - [x] Phase 4 PostgreSQL tests, reconciled exports and executed notebook
+- [x] Phase 5 agent segmentation and incentive analysis
 
 ### Future Work
 
-- [ ] Agent quality vs persistency segmentation
-- [ ] Incentive-effectiveness analysis
 - [ ] Lapse-risk modelling
 - [ ] Power BI management dashboard
 - [ ] Final case study
@@ -671,7 +691,7 @@ Persistency + Retention Analytics
 
 Phase 5
 Agent Segmentation + Incentive Analysis
-            ↓
+            ✓
 
 Phase 6
 Lapse-Risk Modelling

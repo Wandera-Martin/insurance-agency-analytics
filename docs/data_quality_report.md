@@ -2,7 +2,7 @@
 
 **Result: PASS — PostgreSQL validated**
 
-- Run (UTC): 2026-10-15T11:28:23.085636+00:00
+- Run (UTC): 2026-10-19T18:16:00.422755+00:00
 - Scope: PostgreSQL + CSV reconciliation
 - Synthetic snapshot: 2026-09-01; seed: 42
 - All records are synthetic.
@@ -606,6 +606,6 @@ Passing checks establishes structural and documented business-rule consistency, 
     "sales_targets.csv": "51841b0e94b952eab65f6f194ad27517bdb1180048b4bf95116abb685e743cbf",
     "incentives.csv": "98f5dd465cdfea44dfa23682580a36426cf9f17fa9789867f82846d90c72a73e"
   },
-  "postgresql_version": 170004
+  "postgresql_version": 170006
 }
 ```
