@@ -64,20 +64,30 @@ jobs:
         run: >-
           psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 --single-transaction
           -f sql/06_agent_segmentation_incentives.sql
+      - name: Install Phase 6 historical feature layer
+        run: >-
+          psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 --single-transaction
+          -f sql/07_lapse_risk_features.sql
       - name: Run full PostgreSQL test suite
         run: python -m pytest -q
       - name: Export validated Phase 5 outputs
         run: python src/agent_segmentation_incentives.py
       - name: Execute Phase 5 notebook
         run: python src/execute_phase5_notebook.py
+      - name: Train, freeze, test and score Phase 6 model
+        run: python src/lapse_risk_model.py
+      - name: Execute Phase 6 notebook
+        run: python src/execute_phase6_notebook.py
       - uses: actions/upload-artifact@v4
         with:
-          name: phase2-through-phase5-validation-artifacts
+          name: phase2-through-phase6-validation-artifacts
           path: |
             docs/data_quality_report.md
             data/processed/phase3/
             data/processed/phase4/
             data/processed/phase5/
+            data/processed/phase6/
             notebooks/02_agency_performance.ipynb
             notebooks/03_persistency_retention.ipynb
             notebooks/04_agent_segmentation_incentives.ipynb
+            notebooks/05_lapse_risk_model.ipynb
