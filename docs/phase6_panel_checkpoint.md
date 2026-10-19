@@ -11,7 +11,10 @@ split was retained because validation contains 1,606 positive observations and t
 1,414; neither evaluation period is event-sparse.
 
 SQL source SHA-256:
-`3ddaf8644d293fc20814821ec82273523a0f872058114e1941102ce5f3c6f15a`
+`3a689e636196e0fa6a4cf3ca8bdba36bb1780a058b83e9475154f279629a7924`
+
+The hash was refreshed after adding the target-free 2026-09-01 scoring population to the same
+SQL file. Historical panel definitions and the executed checkpoint counts below were unchanged.
 
 ## Historical panel
 
